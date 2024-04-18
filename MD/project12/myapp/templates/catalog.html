@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог | Магазин Copy Star</title>
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Магазин Copy Star</div>
+    <nav>
+        <ul>
+            <li><a href="/">Главная</a></li>
+            <li><a href="/catalog/">Каталог</a></li>
+            <li><a href="/about/">О нас</a></li>
+            <li><a href="/location/">Где нас найти</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="#">Здравствуйте, {{ request.user.username }}</a></li>
+                <li><a href="/cart/">Корзина</a></li>
+                <li><a href="/logout/">Выход</a></li>
+            {% else %}
+                <li><a href="/login/">Вход</a></li>
+                <li><a href="/register/">Регистрация</a></li>
+            {% endif %}
+            
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1>Каталог товаров</h1>
+    
+    <form action="{% url 'catalog_view' %}" method="get">
+        <select name="category">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Фильтр</button>
+    </form>
+    
+
+    <ul>
+        {% for product in products %}
+            <li>
+                <h2><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h2>
+                <p>Цена: {{ product.price }}</p>
+                <form action="{% url 'add_to_cart' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit">Добавить в корзину</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    
+
+
+</main>
+
+
+</body>
+</html>
